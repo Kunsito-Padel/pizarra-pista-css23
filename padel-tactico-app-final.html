@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Padel Táctico</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --verde-lima: #c1ff72;
+      --azul-marca: #004aad;
+      --gris-suave: #e0e0e0;
+      --naranja: #ffa726;
+    }
+
+    html, body {
+      background-color: #222222;
+      font-family: 'Poppins', sans-serif !important;
+      font-weight: 700 !important;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      box-sizing: border-box;
+      position: relative;
+      padding: 20px;
+    }
+
+    .pista-wrapper {
+      background-color: #c1ff72;
+      padding: 60px;
+      border-radius: 0px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    .logo {
+      width: 160px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .court {
+      width: 90vw;
+      height: 45vw;
+      max-width: 1000px;
+      max-height: 500px;
+      background-color: #004aad;
+      position: relative;
+      border: 10px solid white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .net {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 10px;
+      background-color: rgb(7, 7, 7);
+      transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    .service-line {
+      position: absolute;
+      width: 10px;
+      height: 100%;
+      top: 0;
+      background-color: white;
+    }
+
+    .service-line.left { left: 15%; }
+    .service-line.right { right: 15%; }
+
+    .middle-service-line {
+      position: absolute;
+      height: 10px;
+      width: 70%;
+      left: 15%;
+      bottom: 50%;
+      background-color: white;
+      z-index: 1;
+    }
+
+    .opciones-wrapper {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: inline-block;
+      margin: 0;
+      cursor: grab;
+    }
+
+    #togglePanel { z-index: 999; cursor: grab; }
+
+    #panelOpciones {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 10;
+      background-color: rgba(193, 255, 114, 0.3);
+      border-radius: 12px;
+      padding: 10px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background-color: var(--gris-suave);
+      color: black;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s;
+    }
+
+    .btn.active { background-color: var(--verde-lima); }
+    .btn img { width: 20px; height: 20px; }
+
+    .color-container { position: relative; width: 100%; }
+    .palette {
+      display: none;
+      position: absolute;
+      left: 110%;
+      top: 0;
+      flex-direction: row;
+      background-color: white;
+      padding: 6px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      z-index: 20;
+    }
+
+    .color-option {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #333;
+      margin-right: 5px;
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .player {
+      width: clamp(30px, 5vw, 50px);
+      height: clamp(30px, 5vw, 50px);
+      border-radius: 50%;
+      position: absolute;
+      cursor: grab;
+      z-index: 10;
+    }
+
+    .player.teamA { background-color: var(--verde-lima); }
+    .player.teamB { background-color: var(--naranja); }
+
+    .ball {
+      width: clamp(15px, 3vw, 25px);
+      height: clamp(15px, 3vw, 25px);
+      background-image: url("https://i.ibb.co/Q7YBg48t/Dise-o-sin-t-tulo-2025-07-06-T195510-741.png");
+      background-size: cover;
+      background-position: center;
+      border-radius: 50%;
+      position: absolute;
+      cursor: grab;
+      display: none;
+      z-index: 10;
+    }
+
+    #draw-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 9;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+      pointer-events: auto;
+    }
+
+    #arrow-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    .arrow {
+      position: absolute;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .arrow svg { overflow: visible; }
+    .arrow line {
+      stroke: black;
+      stroke-width: 4;
+      marker-end: url(#arrowhead);
+    }
+
+    .arrow.dashed line {
+      stroke-dasharray: 10, 10;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <img src="https://i.ibb.co/2YMDsRR0/Disen-o-sin-ti-tulo-2025-07-08-T130636-959.png" alt="Padel Táctico Logo" class="logo">
+
+    <div class="opciones-wrapper">
+      <button id="togglePanel" class="btn">⚙️ OPCIONES</button>
+
+      <div class="panel" id="panelOpciones">
+        <button id="toggleDraw" class="btn">✏️ Dibujar</button>
+        <button id="addArrow" class="btn">🡒 Flecha</button>
+        <button id="toggleArrowStyle" class="btn">🎯 Estilo: Continuo</button>
+        <button id="clearDraw" class="btn">❌ Borrar</button>
+
+        <div class="color-container">
+          <button class="btn" id="toggleColors">🎨 Color</button>
+          <div class="palette" id="colorPalette">
+            <div class="color-option" data-color="#000000" style="background-color: #000000;"></div>
+            <div class="color-option" data-color="#ff0000" style="background-color: #ff0000;"></div>
+            <div class="color-option" data-color="#00cc00" style="background-color: #00cc00;"></div>
+          </div>
+        </div>
+
+        <button id="toggleBall" class="btn">
+          <img src="https://i.ibb.co/Q7YBg48t/Dise-o-sin-t-tulo-2025-07-06-T195510-741.png" alt="Pelota" />
+          Pelota
+        </button>
+      </div>
+    </div>
+
+    <div class="pista-wrapper">
+      <div class="court" id="court">
+        <canvas id="draw-layer"></canvas>
+        <div id="arrow-layer"></div>
+
+        <div class="net"></div>
+        <div class="service-line left"></div>
+        <div class="service-line right"></div>
+        <div class="middle-service-line"></div>
+
+        <div class="player teamA" style="top: 30%; left: 20%;"></div>
+        <div class="player teamA" style="top: 70%; left: 20%;"></div>
+        <div class="player teamB" style="top: 30%; left: 75%;"></div>
+        <div class="player teamB" style="top: 70%; left: 75%;"></div>
+
+        <div class="ball" id="ball" style="top: 50%; left: 48%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <svg width="0" height="0" style="position: absolute; visibility: hidden;">
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,10 L10,5 Z" fill="black" />
+      </marker>
+    </defs>
+  </svg>
+</body>
+</html>
